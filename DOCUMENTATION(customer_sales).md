@@ -8,7 +8,7 @@
 4. [Data Model & DAX](#4-data-model--dax)
 5. [Dashboard Guide](#5-dashboard-guide)
 6. [Insights & Recommendations](#6-insights--recommendations)
-7. [Known Issues & Roadmap](#7-known-issues--roadmap)
+
 
 ---
 
@@ -30,23 +30,15 @@ The dataset has no dates, so the analysis is a **snapshot of customer segments**
 
 | Item | Detail |
 |---|---|
-| Database | PostgreSQL |
-| Server | `localhost:5432` |
+| Database | MySQL |
+| Server | `localhost:3306` |
 | Database name | `customer_behavior` |
-| Table | `public.customer` |
+| Table | `customer_shopping_data` |
 | Load mode | Import (data is stored inside the `.pbix`) |
 
 ### Power Query
 
 The query is a direct table load with **no transformation steps**:
-
-```m
-let
-    Source = PostgreSQL.Database("localhost:5432", "customer_behavior"),
-    public_customer = Source{[Schema="public", Item="customer"]}[Data]
-in
-    public_customer
-```
 
 All cleaning and derived columns (`age_group`, `purchase_frequency_days`) were therefore done **before** Power BI, most likely in SQL or Python. If you publish this project, include that script in the repository to make the pipeline reproducible.
 
@@ -111,7 +103,7 @@ A **single flat table** with no relationships, which suits a one-row-per-custome
 
 ```
 ┌──────────────────────────┐
-│     public customer      │
+│     customer_shopping_behaviour      │
 │  3,900 rows · 19 columns │
 │  3 measures              │
 └──────────────────────────┘
@@ -233,48 +225,4 @@ Outerwear is both the smallest and lowest-spending category.
 4. **Investigate Outerwear**: low volume and the lowest spend per purchase suggest a pricing or range issue (it may also be seasonal).
 5. **Test discounts.** Discounted purchases are not larger than full-price ones, which suggests they may not lift basket size.
 
-## 7. Known Issues & Roadmap
 
-### Known issues
-
-#### 1. Donut sums `customer_id` instead of counting customers
-The subscription donut uses `Sum of customer_id`. Adding up ID numbers has no business meaning and distorts the result:
-
-| Subscription | Donut shows | Actual share of customers |
-|---|---|---|
-| No | 92.7% | **73.0%** |
-| Yes | 7.3% | **27.0%** |
-
-Subscribers have lower ID numbers in this table, so the donut shows them at about a quarter of their true share. **Fix:** replace the value with `[Number of Customers]`.
-
-#### 2. "Sales by ..." charts also sum `customer_id`
-"Sales by Category" and "Sales by Age Group" use `Sum of customer_id` and are titled *Sales*. They are neither sales nor customer counts. The distortion is small here (category shares are within about 0.2 points) but only by coincidence. **Fix:** use `[Number of Customers]` and rename to "Customers by Category" and "Customers by Age Group".
-
-#### 3. Revenue uses implicit sums
-Revenue charts rely on an implicit `Sum of purchase_amount`. **Fix:** add `Total Revenue = SUM('public customer'[purchase_amount])` and use it everywhere. No KPI card shows revenue even though it is the headline number.
-
-#### 4. Age group order
-Age groups are text, so they sort alphabetically (Adult, Middle-aged, Senior, Young Adult). **Fix:** add a sort-order column (1–4) and use *Sort by column*.
-
-#### 5. Duplicate frequency labels
-`Fortnightly` and `Bi-Weekly` both mean 14 days; `Quarterly` and `Every 3 Months` both mean 90. Charts by `frequency_of_purchases` split one group into two. **Fix:** standardise the labels.
-
-#### 6. Pipeline not reproducible
-The source is a local PostgreSQL database and the derived columns were built outside Power BI. **Fix:** add the SQL/Python scripts to the repo, and use a parameter for the server name.
-
-### Limitations
-
-- One row per customer with a single purchase, so no repeat-purchase or trend analysis.
-- No date field, so no seasonality over time (the `season` column is a label only).
-- Currency is not specified.
-- Synthetic-looking data limits real-world conclusions.
-
-### Roadmap
-
-- [ ] Fix issues 1–5
-- [ ] Add a `Total Revenue` KPI card
-- [ ] Add a second page: payment method, shipping and discount analysis
-- [ ] Add a US map of revenue by state
-- [ ] Add purchase frequency and previous purchases analysis (customer loyalty)
-- [ ] Add tooltips showing revenue, customers and average rating together
-- [ ] Publish to Power BI Service and link the live report
