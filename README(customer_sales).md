@@ -1,10 +1,6 @@
 # Customer Behavior Dashboard (Power BI)
 
 A single-page, interactive Power BI dashboard that analyses **3,900 retail customers** to show who buys, what they buy and how much they spend. It looks at revenue and customer mix by product category and age group, subscription uptake, and satisfaction, with filters for subscription status, gender, category and shipping type.
-
-![Dashboard preview](images/dashboard.png)
-<!-- Add a screenshot of the dashboard at images/dashboard.png -->
-
 ---
 
 ## Key Results
@@ -27,8 +23,6 @@ A single-page, interactive Power BI dashboard that analyses **3,900 retail custo
 4. **Subscribers are 27% of customers** but do not spend or rate differently (59.49 vs 59.87 average purchase, 3.75 rating for both).
 5. **Age groups are evenly balanced**, each holding 24–26% of customers; Young Adults (18–31) lead slightly with 26.7% of revenue.
 
-> **Important:** the subscription donut currently shows the wrong split (about 93% / 7% instead of the true 73% / 27%) because it sums `customer_id`. Fix is in [Known Issues](DOCUMENTATION.md#7-known-issues--roadmap).
-
 Full analysis: [Insights](DOCUMENTATION.md#6-insights--recommendations)
 
 ---
@@ -46,8 +40,8 @@ See the [Dashboard Guide](DOCUMENTATION.md#5-dashboard-guide).
 
 | Layer | Tool |
 |---|---|
-| Database | PostgreSQL (`customer_behavior` database, `public.customer` table) |
-| Connection | Power BI PostgreSQL connector (Import mode) |
+| Database | PostgreSQL (`customer_behavior` database, `customer_shopping_data table) |
+| Connection | Power BI MySQL connector (Import mode) |
 | Calculations | DAX (3 measures) |
 | Visualisation | Power BI Desktop |
 
@@ -58,7 +52,6 @@ Customer-Behavior-Dashboard/
 ├── README.md            # Project overview (this file)
 ├── DOCUMENTATION.md     # Full technical documentation
 ├── customer_behavior_dashboard.pbix
-└── images/              # Screenshots
 ```
 
 ## Getting Started
@@ -69,13 +62,6 @@ Customer-Behavior-Dashboard/
 
 ## Skills Demonstrated
 
-SQL database connectivity (PostgreSQL) · Data modelling · DAX measures · KPI design · Dashboard layout and slicers · Customer segmentation · Documentation
+SQL database connectivity (MySQL) · Data modelling · DAX measures · KPI design · Dashboard layout and slicers · Customer segmentation · Documentation
 
-## Known Limitations
 
-One row per customer (a single purchase each), no date field, and a few visuals use the wrong aggregation. Details and fixes: [Known Issues & Roadmap](DOCUMENTATION.md#7-known-issues--roadmap).
-
-## Author
-
-**<Your Name>** — Data Analyst (transitioning from Software Test Engineering)
-[LinkedIn](https://linkedin.com/in/your-profile) · [GitHub](https://github.com/your-username)
